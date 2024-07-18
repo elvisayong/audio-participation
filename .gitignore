@@ -1,0 +1,50 @@
+# Node.js
+/node_modules/
+/frontend/node_modules/
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+
+# Testing
+/coverage/
+
+# Production
+/build/
+/frontend/build/
+/dist/
+/frontend/dist/
+
+# Miscellaneous
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+.pnp
+.pnp.js
+
+# Python
+*.pyc
+__pycache__/
+*.log
+*.pot
+db.sqlite3
+media/
+*.env
+.venv
+env/
+venv/
+ENV/
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+
+# Docker
+*.env
