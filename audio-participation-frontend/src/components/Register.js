@@ -99,15 +99,16 @@ function Register() {
     };
 
     return (
-        <Container>
+        <Container data-cy="register-container">
             <Box>
-                <Title>Register</Title>
+                <Title data-cy="register-title">Register</Title>
                 <InputGroup>
                     <Input
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Username"
+                        data-cy="register-username"
                     />
                 </InputGroup>
                 <InputGroup>
@@ -116,6 +117,7 @@ function Register() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Password"
+                        data-cy="register-password"
                     />
                 </InputGroup>
                 <InputGroup>
@@ -124,11 +126,12 @@ function Register() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email"
+                        data-cy="register-email"
                     />
                 </InputGroup>
-                <Button onClick={handleRegister}>Register</Button>
+                <Button onClick={handleRegister} data-cy="register-button">Register</Button>
                 <LoginLink>
-                    Already have an account? <Link to="/">Login here</Link>.
+                    Already have an account? <Link to="/" data-cy="register-login-link">Login here</Link>.
                 </LoginLink>
             </Box>
         </Container>
