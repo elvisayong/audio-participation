@@ -103,6 +103,7 @@ function Login() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Username"
+                        data-cy="username-input"
                     />
                 </InputGroup>
                 <InputGroup>
@@ -111,9 +112,10 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Password"
+                        data-cy="password-input"
                     />
                 </InputGroup>
-                <Button onClick={handleLogin}>Login</Button>
+                <Button onClick={handleLogin} data-cy="login-button">Login</Button>
                 <RegisterLink>
                     Don't have an account? <Link to="/register">Sign up here</Link>.
                 </RegisterLink>
