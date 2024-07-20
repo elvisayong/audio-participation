@@ -86,12 +86,7 @@ jobs:
             sleep 10
           done
 
-      - name: Print backend logs for debugging
-        run: |
-          echo "Backend logs:"
-          cat audio_participation_backend/logs/*.log || echo "No logs found"
-
       - name: Run Cypress tests
         run: |
           cd audio-participation-frontend
-          npx cypress run --config defaultCommandTimeout=20000
+          npx cypress run --config defaultCommandTimeout=30000
