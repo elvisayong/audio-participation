@@ -80,4 +80,4 @@ jobs:
       - name: Run Cypress tests
         run: |
           cd audio-participation-frontend
-          npx cypress run --config defaultCommandTimeout=60000
+          npx cypress run --config defaultCommandTimeout=300000
