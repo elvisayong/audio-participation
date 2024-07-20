@@ -1,8 +1,17 @@
-
+// audio-participation-frontend/cypress/e2e/homepage.cy.js
 
 describe('Homepage', () => {
-  it('should load the homepage', () => {
+  before(() => {
+    const username = 'francesca';
+    const password = 'password';
+    cy.login(username, password);
+  });
+
+  beforeEach(() => {
     cy.visit('/');
-    cy.contains('Available Plans'); // Adjust this selector to match something on your homepage
+  });
+
+  it('should display the homepage title', () => {
+    cy.get('h2').contains('Available Plans');
   });
 });
