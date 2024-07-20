@@ -63,6 +63,10 @@ jobs:
           cd audio-participation-frontend
           npm install
 
+      - name: Install wait-on
+        run: |
+          npm install -g wait-on
+
       - name: Start frontend server
         run: |
           cd audio-participation-frontend
@@ -72,8 +76,7 @@ jobs:
 
       - name: Wait for frontend server to be ready
         run: |
-          sudo apt-get install -y wait-for-it
-          wait-for-it localhost:3000 --timeout=60
+          wait-on http://localhost:3000
 
       - name: Run Cypress tests
         run: |
