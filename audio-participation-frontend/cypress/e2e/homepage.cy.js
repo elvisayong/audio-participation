@@ -13,5 +13,6 @@ describe('Homepage', () => {
 
   it('should display the homepage title', () => {
     cy.get('h2').contains('Available Plans');
+    cy.contains('Available Plans'); // Adjust this selector to match something on your 
   });
 });
