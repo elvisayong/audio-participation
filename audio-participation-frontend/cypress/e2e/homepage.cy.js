@@ -1,6 +1,6 @@
 // audio-participation-frontend/cypress/e2e/homepage.cy.js
 
-describe('Homepage', () => {
+describe('Homepage Test', () => {
   before(() => {
     const username = 'francesca';
     const password = 'password';
