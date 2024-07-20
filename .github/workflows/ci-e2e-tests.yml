@@ -32,12 +32,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.10.5
+          python-version: '3.10.5'
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: '14'
 
       - name: Install backend dependencies
         run: |
@@ -62,6 +62,18 @@ jobs:
         run: |
           cd audio-participation-frontend
           npm install
+
+      - name: Start frontend server
+        run: |
+          cd audio-participation-frontend
+          npm start &
+        env:
+          CI: true
+
+      - name: Wait for frontend server to be ready
+        run: |
+          sudo apt-get install -y wait-for-it
+          wait-for-it localhost:3000 --timeout=60
 
       - name: Run Cypress tests
         run: |
