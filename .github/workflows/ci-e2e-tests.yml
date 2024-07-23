@@ -80,4 +80,16 @@ jobs:
       - name: Run Cypress tests
         run: |
           cd audio-participation-frontend
-          npx cypress run --config defaultCommandTimeout=300000
+          npx cypress run --config defaultCommandTimeout=60000
+
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-videos
+          path: audio-participation-frontend/cypress/videos/**/*.mp4
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-screenshots
+          path: audio-participation-frontend/cypress/screenshots/**/*.png
