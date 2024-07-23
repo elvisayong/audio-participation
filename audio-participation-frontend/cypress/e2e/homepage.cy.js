@@ -1,4 +1,3 @@
-// audio-participation-frontend/cypress/e2e/homepage.cy.js
 
 describe('Homepage Test', () => {
   before(() => {
