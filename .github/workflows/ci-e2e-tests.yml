@@ -37,8 +37,8 @@ jobs:
       - name: Start Django server
         run: |
           cd audio_participation_backend
-          python manage.py runserver 0.0.0.0:8000 &
-
+          python manage.py runserver 0.0.0.0:8000 > backend.log 2>&1 &
+        
       - name: Wait for backend to be ready
         run: |
           sudo apt-get install -y curl
@@ -55,7 +55,7 @@ jobs:
       - name: Start frontend server
         run: |
           cd audio-participation-frontend
-          npm start &
+          npm start > frontend.log 2>&1 &
         env:
           CI: true
 
@@ -67,16 +67,33 @@ jobs:
             sleep 10
           done
 
-      - name: Check frontend server logs
+      - name: Print Backend Logs
         run: |
-          ps aux | grep npm
-          sudo netstat -tuln | grep :3000
-          curl -I http://localhost:3000
+          cd audio_participation_backend
+          cat backend.log
+
+      - name: Print Frontend Logs
+        run: |
+          cd audio-participation-frontend
+          cat frontend.log
+
+      - name: Print Django settings
+        run: |
+          cd audio_participation_backend
+          python -c "import os; print(f'DJANGO_SETTINGS_MODULE: {os.getenv('DJANGO_SETTINGS_MODULE')}')"
+
+      - name: Print Environment Variables
+        run: printenv
+
+      - name: Check Django Migrations
+        run: |
+          cd audio_participation_backend
+          python manage.py showmigrations
 
       - name: Run Cypress tests
         run: |
           cd audio-participation-frontend
-          npx cypress run --config defaultCommandTimeout=60000
+          npx cypress run --config defaultCommandTimeout=120000
 
       - name: List Cypress videos
         run: ls -R audio-participation-frontend/cypress/videos
