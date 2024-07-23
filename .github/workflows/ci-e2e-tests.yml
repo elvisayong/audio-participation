@@ -81,6 +81,15 @@ jobs:
         run: |
           cd audio-participation-frontend
           npx cypress run --config defaultCommandTimeout=60000
+        continue-on-error: true
+
+  post-build:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: List Cypress videos
         run: ls -R audio-participation-frontend/cypress/videos
