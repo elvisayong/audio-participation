@@ -71,10 +71,12 @@ jobs:
             sleep 10
           done
 
-      - name: Check frontend server logs
+      - name: Check backend server status
         run: |
-          ps aux | grep npm
-          sudo netstat -tuln | grep :3000
+          curl -I http://localhost:8000
+
+      - name: Check frontend server status
+        run: |
           curl -I http://localhost:3000
 
       - name: Run Cypress tests
