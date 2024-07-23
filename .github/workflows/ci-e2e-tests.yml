@@ -84,18 +84,22 @@ jobs:
 
       - name: List Cypress videos
         run: ls -R audio-participation-frontend/cypress/videos
+        continue-on-error: true
 
       - name: List Cypress screenshots
         run: ls -R audio-participation-frontend/cypress/screenshots
+        continue-on-error: true
 
       - name: Upload Cypress Videos
         uses: actions/upload-artifact@v2
         with:
           name: cypress-videos
           path: audio-participation-frontend/cypress/videos/**/*.mp4
+        continue-on-error: true
 
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v2
         with:
           name: cypress-screenshots
           path: audio-participation-frontend/cypress/screenshots/**/*.png
+        continue-on-error: true
