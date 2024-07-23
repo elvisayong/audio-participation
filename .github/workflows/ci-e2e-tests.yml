@@ -82,6 +82,14 @@ jobs:
           cd audio-participation-frontend
           npx cypress run --config defaultCommandTimeout=60000
 
+      - name: List Cypress videos
+        run: |
+          ls -la audio-participation-frontend/cypress/videos
+
+      - name: List Cypress screenshots
+        run: |
+          ls -la audio-participation-frontend/cypress/screenshots
+
       - name: Upload Cypress Videos
         uses: actions/upload-artifact@v2
         with:
