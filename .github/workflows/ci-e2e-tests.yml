@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      REACT_APP_API_URL: http://localhost:8000
+      DJANGO_SETTINGS_MODULE: audio_participation_backend.settings
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -45,8 +49,6 @@ jobs:
           python manage.py check
 
       - name: Apply migrations
-        env:
-          DJANGO_SETTINGS_MODULE: audio_participation_backend.settings
         run: |
           cd audio_participation_backend
           python manage.py migrate
@@ -59,8 +61,6 @@ jobs:
           cat db_state.json
 
       - name: Start Django server
-        env:
-          DJANGO_SETTINGS_MODULE: audio_participation_backend.settings
         run: |
           cd audio_participation_backend
           python manage.py runserver 0.0.0.0:8000 &
@@ -86,10 +86,10 @@ jobs:
       - name: Start frontend server
         env:
           CI: true
-          REACT_APP_API_URL: http://localhost:8000
+          REACT_APP_API_URL: ${{ env.REACT_APP_API_URL }}
         run: |
           cd audio-participation-frontend
-          echo "REACT_APP_API_URL=$REACT_APP_API_URL" > .env
+          echo "REACT_APP_API_URL=${{ env.REACT_APP_API_URL }}" > .env
           npm start &
 
       - name: Print frontend logs
@@ -133,6 +133,7 @@ jobs:
       - name: Run Cypress tests
         env:
           CYPRESS_BASE_URL: http://localhost:3000
+          REACT_APP_API_URL: ${{ env.REACT_APP_API_URL }}
         run: |
           cd audio-participation-frontend
           npx cypress run --config defaultCommandTimeout=120000

@@ -12,17 +12,14 @@ describe('login with valid credentials', () => {
     cy.get('[data-cy=password-input]').type('password');
 
     cy.log('Clicking login button');
+    cy.intercept('POST', '**/api/token/**').as('loginRequest');
     cy.get('[data-cy=login-button]').click();
 
-    cy.log('Checking if redirected to dashboard');
-    cy.url().should('include', '/dashboard');
-
-    // Debugging: Check if the backend response is correct
-    cy.wait(1000); // Adding wait to see if it helps
-    cy.get('body').then(($body) => {
-      if ($body.find('[data-cy=error-message]').length) {
-        cy.log('Login failed with error: ' + $body.find('[data-cy=error-message]').text());
-      }
+    cy.log('Waiting for login response');
+    cy.wait('@loginRequest').then((interception) => {
+      cy.log('Login request completed');
+      expect(interception.response.statusCode).to.equal(200);
+      cy.url().should('include', '/dashboard');
     });
   });
 });
