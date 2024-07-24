@@ -62,7 +62,7 @@ jobs:
       - name: Print backend logs
         run: |
           sleep 10
-          cat audio_participation_backend/logs/*.log
+          cat audio_participation_backend/logs/django.log
 
       - name: Wait for backend to be ready
         run: |
