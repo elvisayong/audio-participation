@@ -45,4 +45,4 @@ __pycache__/
 media/
 
 # Docker
-*.env
+# *.env (comment out this line or ensure it does not exclude Dockerfile)
