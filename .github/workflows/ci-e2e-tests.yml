@@ -178,8 +178,8 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp-backend:latest -f audio_participation_backend/Dockerfile .
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp-frontend:latest -f audio-participation-frontend/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp-backend:latest -f audio_participation_backend/Dockerfile audio_participation_backend/
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp-frontend:latest -f audio-participation-frontend/Dockerfile audio-participation-frontend/
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp-backend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp-frontend:latest
 
