@@ -48,11 +48,10 @@ jobs:
           mkdir -p logs
           python manage.py check
 
-      - name: Apply migrations and create user
+      - name: Apply migrations
         run: |
           cd audio_participation_backend
           python manage.py migrate
-          echo "from django.contrib.auth.models import User; User.objects.create_superuser('francesca', 'francesca@example.com', 'password')" | python manage.py shell
 
       - name: Verify database state
         run: |
