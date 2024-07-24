@@ -87,7 +87,7 @@ function Register() {
                 email
             });
             if (response.status === 201) {
-                // Redirect to login page after successful registration
+
                 window.location.href = '/';
             } else {
                 // Handle registration error
