@@ -16,5 +16,13 @@ describe('login with valid credentials', () => {
 
     cy.log('Checking if redirected to dashboard');
     cy.url().should('include', '/dashboard');
+
+    // Debugging: Check if the backend response is correct
+    cy.wait(1000); // Adding wait to see if it helps
+    cy.get('body').then(($body) => {
+      if ($body.find('[data-cy=error-message]').length) {
+        cy.log('Login failed with error: ' + $body.find('[data-cy=error-message]').text());
+      }
+    });
   });
 });

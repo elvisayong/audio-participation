@@ -89,6 +89,7 @@ jobs:
           REACT_APP_API_URL: http://localhost:8000
         run: |
           cd audio-participation-frontend
+          echo "REACT_APP_API_URL=$REACT_APP_API_URL" > .env
           npm start &
 
       - name: Print frontend logs
@@ -117,7 +118,7 @@ jobs:
 
       - name: Check frontend to backend connectivity
         run: |
-          curl http://localhost:3000/api/healthcheck
+          curl -I http://localhost:3000/api/healthcheck
 
       - name: Check environment variables
         run: |
