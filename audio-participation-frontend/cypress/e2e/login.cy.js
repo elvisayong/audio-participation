@@ -11,7 +11,10 @@ describe('login with valid credentials', () => {
     cy.get('[data-cy=username-input]').type('francesca');
     cy.get('[data-cy=password-input]').type('password');
 
- 
+    cy.log('Clicking login button');
+    cy.get('[data-cy=login-button]').click();
 
+    cy.log('Checking if redirected to dashboard');
+    cy.url().should('include', '/dashboard');
   });
 });
