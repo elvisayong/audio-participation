@@ -7,7 +7,11 @@ describe('login with valid credentials', () => {
     cy.get('[data-cy=password-input]').should('be.visible');
     cy.get('[data-cy=login-button]').should('be.visible');
 
+    cy.log('Entering credentials');
+    cy.get('[data-cy=username-input]').type('francesca');
+    cy.get('[data-cy=password-input]').type('password');
 
+ 
 
   });
 });
