@@ -17,7 +17,7 @@ describe('login with valid credentials', () => {
 
     cy.log('Waiting for login response');
     cy.wait('@loginRequest').then((interception) => {
-      cy.log('Login request completed');
+      cy.log('Login request details: ', interception);
       expect(interception.response.statusCode).to.equal(200);
       cy.url().should('include', '/dashboard');
     });
