@@ -38,6 +38,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r audio_participation_backend/audio_participation_backend/requirements.txt
 
+      - name: Set up Django environment
+        run: |
+          cd audio_participation_backend
+          mkdir -p logs
+          python manage.py check
+
       - name: Apply migrations
         env:
           DJANGO_SETTINGS_MODULE: audio_participation_backend.settings
@@ -88,7 +94,11 @@ jobs:
       - name: Print frontend logs
         run: |
           sleep 10
-          cat audio-participation-frontend/logs/*.log
+          if [ -d "audio-participation-frontend/logs" ]; then
+            cat audio-participation-frontend/logs/*.log
+          else
+            echo "Frontend logs directory not found"
+          fi
 
       - name: Wait for frontend to be ready
         run: |
