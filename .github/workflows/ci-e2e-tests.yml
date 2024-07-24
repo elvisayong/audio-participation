@@ -127,14 +127,14 @@ jobs:
       - name: Install Cypress dependencies
         run: |
           cd audio-participation-frontend
-          npm install cypress cypress-failed-log
+          npm install cypress
 
       - name: Run Cypress tests
         env:
           CYPRESS_BASE_URL: http://localhost:3000
         run: |
           cd audio-participation-frontend
-          npx cypress run --config defaultCommandTimeout=120000 --reporter cypress-failed-log
+          npx cypress run --config defaultCommandTimeout=120000
 
       - name: List Cypress videos
         run: ls -R audio-participation-frontend/cypress/videos
