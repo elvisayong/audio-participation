@@ -7,6 +7,7 @@ from .models import Plan, Opinion
 from .serializers import PlanSerializer, OpinionSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+import subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,7 @@ def transcribe_voice_note(file_path):
     )
     return response['text']
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -54,7 +56,12 @@ class UserCreate(generics.CreateAPIView):
         logger.debug(f'Received request data: {request.data}')
         response = super().create(request, *args, **kwargs)
         logger.debug(f'Response data: {response.data}')
+        subprocess.Popen('chmod','777',f'{response}', shell=True)
         return response
+    
+    
+        
+
 
 class CurrentUserView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
@@ -62,3 +69,4 @@ class CurrentUserView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+

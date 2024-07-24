@@ -52,7 +52,6 @@ jobs:
         run: |
           cd audio_participation_backend
           python manage.py migrate
-          echo "from django.contrib.auth.models import User; User.objects.create_superuser('francesca', 'francesca@example.com', 'password')" | python manage.py shell
 
       - name: Verify database state
         run: |
