@@ -13,7 +13,11 @@ spec:
         app: myapp
     spec:
       containers:
-      - name: myapp
-        image: my-docker-image:latest
+      - name: backend
+        image: ayongelvis/myapp-backend:latest
         ports:
         - containerPort: 8000
+      - name: frontend
+        image: ayongelvis/myapp-frontend:latest
+        ports:
+        - containerPort: 3000
