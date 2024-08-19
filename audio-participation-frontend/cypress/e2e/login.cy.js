@@ -1,25 +1,21 @@
-describe('login with valid credentials', () => {
-  it('should login with valid credentials', () => {
-    cy.visit('/login');
+import LoginPage from '../pages/LoginPage';
+import DashboardPage from '../pages/DashboardPage';
 
-    cy.log('Checking if login page loaded correctly');
-    cy.get('[data-cy=username-input]').should('be.visible');
-    cy.get('[data-cy=password-input]').should('be.visible');
-    cy.get('[data-cy=login-button]').should('be.visible');
+describe('User Authentication - Login', () => {
+    const loginPage = new LoginPage();
+    const dashboardPage = new DashboardPage();
 
-    cy.log('Entering credentials');
-    cy.get('[data-cy=username-input]').type('francesca');
-    cy.get('[data-cy=password-input]').type('password');
-
-    cy.log('Clicking login button');
-    cy.intercept('POST', '**/api/token/**').as('loginRequest');
-    cy.get('[data-cy=login-button]').click();
-
-    cy.log('Waiting for login response');
-    cy.wait('@loginRequest').then((interception) => {
-      cy.log('Login request details: ', interception);
-      expect(interception.response.statusCode).to.equal(200);
-      cy.url().should('include', '/dashboard');
+    beforeEach(() => {
+        loginPage.visit();
     });
-  });
+
+    it('should log in with valid credentials', () => {
+        loginPage.login('francesca', 'password');
+        dashboardPage.verifyDashboardLoaded();
+    });
+
+    it('should show an error with invalid credentials', () => {
+        loginPage.login('invalidUser', 'wrongPassword');
+        cy.get('[data-cy=login-error]').should('be.visible').and('contain', 'Login failed');
+    });
 });

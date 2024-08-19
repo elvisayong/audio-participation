@@ -112,13 +112,14 @@ function OpinionSubmission() {
 
         const formData = new FormData();
         formData.append('plan', selectedPlan);
-        formData.append('voice_note', audioBlob, 'voice_note.wav');
+        formData.append('voice_note', audioBlob);
 
         try {
             const response = await api.post('/opinions/', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
             });
             if (response.status === 201) {
                 alert('Opinion submitted successfully!');

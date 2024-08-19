@@ -8,9 +8,35 @@ spec:
       containers:
       - name: e2e-tests
         image: cypress/included:9.3.1
-        command: ["npx", "cypress", "run"]
+        command: 
+        - "/bin/bash"
+        - "-c"
+        - |
+          echo "Changing to /cypress directory:"
+          cd /cypress
+          echo "Current working directory:"
+          pwd
+          echo "Listing current directory:"
+          ls -la
+          echo "Cypress config file contents:"
+          cat cypress.config.js
+          echo "Creating writable directory for Cypress output:"
+          mkdir -p /tmp/cypress
+          export CYPRESS_videosFolder=/tmp/cypress/videos
+          export CYPRESS_screenshotsFolder=/tmp/cypress/screenshots
+          echo "Attempting to run Cypress:"
+          npx cypress run --config-file cypress.config.js || true
+          echo "Keeping container alive for debugging:"
+          tail -f /dev/null
         env:
         - name: CYPRESS_BASE_URL
           value: "http://myapp-frontend-service.default.svc.cluster.local"
+        volumeMounts:
+        - name: cypress-config
+          mountPath: /cypress
       restartPolicy: Never
+      volumes:
+      - name: cypress-config
+        configMap:
+          name: cypress-config
   backoffLimit: 4

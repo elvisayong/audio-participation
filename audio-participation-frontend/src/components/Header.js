@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api'; 
 
 const HeaderContainer = styled.header`
     background-color: #343a40;
@@ -31,11 +32,40 @@ const NavLinks = styled.nav`
             color: #007bff;
         }
     }
+
+    button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        transition: color 0.3s;
+
+        &:hover {
+            color: #007bff;
+        }
+    }
 `;
 
 const Header = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
     const isAuthenticated = !!localStorage.getItem('token');
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchUserDetails();
+        }
+    }, [isAuthenticated]);
+
+    const fetchUserDetails = async () => {
+        try {
+            const response = await api.get('/me/');
+            setIsAdmin(response.data.is_staff);
+        } catch (error) {
+            console.error('Error fetching user details', error);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -48,15 +78,16 @@ const Header = () => {
             <NavLinks>
                 {isAuthenticated ? (
                     <>
-                        <Link to="/">Home</Link>
-                        <Link to="/dashboard">Dashboard</Link>
-                        <Link to="/manage-plans">Manage Plans</Link>
-                        <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>Logout</button>
+                        <Link to="/" data-cy="home-link">Home</Link>
+                        <Link to="/dashboard" data-cy="dashboard-link">Dashboard</Link>
+                        <Link to="/profile" data-cy="profile-link">Profile</Link>
+                        {isAdmin && <Link to="/manage-plans" data-cy="manage-plans-link">Manage Plans</Link>}
+                        <button onClick={handleLogout} data-cy="logout-button">Logout</button>
                     </>
                 ) : (
                     <>
-                        <Link to="/login">Login</Link>
-                        <Link to="/register">Register</Link>
+                        <Link to="/login" data-cy="login-link">Login</Link>
+                        <Link to="/register" data-cy="register-link">Register</Link>
                     </>
                 )}
             </NavLinks>
@@ -65,3 +96,4 @@ const Header = () => {
 };
 
 export default Header;
+

@@ -10,9 +10,10 @@ const Container = styled.div`
 `;
 
 const Title = styled.h2`
-    font-size: 24px;
+    font-size: 26px;
     color: #333;
     margin-bottom: 20px;
+    font-weight: 700;
 `;
 
 const Form = styled.div`
@@ -23,13 +24,21 @@ const Form = styled.div`
     margin-bottom: 20px;
 `;
 
+const Label = styled.label`
+    font-size: 14px;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+`;
+
 const Input = styled.input`
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 16px;
     margin-bottom: 10px;
+    transition: border-color 0.3s;
     &:focus {
         border-color: #007bff;
         outline: none;
@@ -38,11 +47,12 @@ const Input = styled.input`
 
 const Textarea = styled.textarea`
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 16px;
     margin-bottom: 10px;
+    transition: border-color 0.3s;
     &:focus {
         border-color: #007bff;
         outline: none;
@@ -51,9 +61,9 @@ const Textarea = styled.textarea`
 
 const Button = styled.button`
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: #007bff;
     color: white;
     font-size: 16px;
@@ -80,13 +90,18 @@ const ListItem = styled.li`
 
 const PlanTitle = styled.h4`
     font-size: 18px;
-    color: #333;
+    color: #007bff;
     margin: 0;
 `;
 
 const PlanDescription = styled.p`
     font-size: 16px;
     color: #555;
+`;
+
+const ExpirationDate = styled.p`
+    font-size: 14px;
+    color: #888;
 `;
 
 const EditButton = styled.button`
@@ -122,6 +137,7 @@ function PlanManagement() {
     const [plans, setPlans] = useState([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [expirationDate, setExpirationDate] = useState('');
     const [editingPlan, setEditingPlan] = useState(null);
     const navigate = useNavigate();
 
@@ -129,7 +145,7 @@ function PlanManagement() {
         try {
             const response = await api.get('/me/');
             if (!response.data.is_staff) {
-                navigate('/dashboard'); // Redirect non-admin users to dashboard
+                navigate('/dashboard'); 
             }
         } catch (error) {
             console.error('Error fetching user details', error);
@@ -153,14 +169,15 @@ function PlanManagement() {
     const handleCreateOrUpdatePlan = async () => {
         try {
             if (editingPlan) {
-                await api.put(`/plans/${editingPlan.id}/`, { title, description });
-                setPlans(plans.map(plan => (plan.id === editingPlan.id ? { ...plan, title, description } : plan)));
+                await api.put(`/plans/${editingPlan.id}/`, { title, description, expiration_date: expirationDate });
+                setPlans(plans.map(plan => (plan.id === editingPlan.id ? { ...plan, title, description, expiration_date: expirationDate } : plan)));
             } else {
-                const response = await api.post('/plans/', { title, description });
+                const response = await api.post('/plans/', { title, description, expiration_date: expirationDate });
                 setPlans([...plans, response.data]);
             }
             setTitle('');
             setDescription('');
+            setExpirationDate('');
             setEditingPlan(null);
         } catch (error) {
             console.error(`Error ${editingPlan ? 'updating' : 'creating'} plan`, error);
@@ -170,6 +187,7 @@ function PlanManagement() {
     const handleEditPlan = (plan) => {
         setTitle(plan.title);
         setDescription(plan.description);
+        setExpirationDate(plan.expiration_date);
         setEditingPlan(plan);
     };
 
@@ -184,30 +202,42 @@ function PlanManagement() {
 
     return (
         <Container>
-            <Title>Manage Plans</Title>
-            <Form>
+            <Title data-cy="manage-plans-title">Manage Plans</Title>
+            <Form data-cy="plan-form">
+                <Label>Plan Title</Label>
                 <Input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Title"
+                    placeholder="Enter plan title"
+                    data-cy="plan-title-input"
                 />
+                <Label>Plan Description</Label>
                 <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Description"
-                ></Textarea>
-                <Button onClick={handleCreateOrUpdatePlan}>
+                    placeholder="Enter plan description"
+                    data-cy="plan-description-input"
+                />
+                <Label>Expiration Date (Last date for opinions)</Label>
+                <Input
+                    type="date"
+                    value={expirationDate}
+                    onChange={(e) => setExpirationDate(e.target.value)}
+                    data-cy="plan-expiration-date-input"
+                />
+                <Button onClick={handleCreateOrUpdatePlan} data-cy="submit-plan-button">
                     {editingPlan ? 'Update Plan' : 'Create Plan'}
                 </Button>
             </Form>
-            <List>
+            <List data-cy="plans-list">
                 {plans.map(plan => (
-                    <ListItem key={plan.id}>
-                        <PlanTitle>{plan.title}</PlanTitle>
-                        <PlanDescription>{plan.description}</PlanDescription>
-                        <EditButton onClick={() => handleEditPlan(plan)}>Edit</EditButton>
-                        <DeleteButton onClick={() => handleDeletePlan(plan.id)}>Delete</DeleteButton>
+                    <ListItem key={plan.id} data-cy="plan-item">
+                        <PlanTitle data-cy="plan-title">{plan.title}</PlanTitle>
+                        <PlanDescription data-cy="plan-description">{plan.description}</PlanDescription>
+                        <ExpirationDate data-cy="plan-expiration-date">Expiration Date: {plan.expiration_date || 'N/A'}</ExpirationDate>
+                        <EditButton onClick={() => handleEditPlan(plan)} data-cy="edit-plan-button">Edit</EditButton>
+                        <DeleteButton onClick={() => handleDeletePlan(plan.id)} data-cy="delete-plan-button">Delete</DeleteButton>
                     </ListItem>
                 ))}
             </List>
