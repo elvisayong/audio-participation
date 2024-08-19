@@ -1,12 +1,21 @@
-describe('login with valid credentials', () => {
-  it('should login with valid credentials', () => {
-    cy.visit('/login');
+import LoginPage from '../pages/LoginPage';
+import DashboardPage from '../pages/DashboardPage';
 
-    cy.get('[data-cy=username-input]').type('francesca');
-    cy.get('[data-cy=password-input]').type('password');
-    cy.get('[data-cy=login-button]').click();
+describe('User Authentication - Login', () => {
+    const loginPage = new LoginPage();
+    const dashboardPage = new DashboardPage();
 
-    cy.url().should('include', '/dashboard');
+    beforeEach(() => {
+        loginPage.visit();
+    });
 
-  } );
+    it('should log in with valid credentials', () => {
+        loginPage.login('francesca', 'password');
+        dashboardPage.verifyDashboardLoaded();
+    });
+
+    it('should show an error with invalid credentials', () => {
+        loginPage.login('invalidUser', 'wrongPassword');
+        cy.get('[data-cy=login-error]').should('be.visible').and('contain', 'Login failed');
+    });
 });
