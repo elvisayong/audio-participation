@@ -11,7 +11,6 @@ DATABASES = {
     }
 }
 
-# Additional settings specific for testing
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.MD5PasswordHasher',
 ]

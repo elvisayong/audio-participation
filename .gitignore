@@ -30,7 +30,6 @@
 __pycache__/
 *.log
 *.pot
-db.sqlite3
 media/
 *.env
 .venv
@@ -43,8 +42,7 @@ ENV/
 *.pot
 *.pyc
 __pycache__/
-db.sqlite3
 media/
 
 # Docker
-*.env
+# *.env (comment out this line or ensure it does not exclude Dockerfile)

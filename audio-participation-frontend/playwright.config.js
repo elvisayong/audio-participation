@@ -5,7 +5,7 @@ module.exports = defineConfig({
   retries: 2, // Number of retries on failure
   use: {
     headless: false, // Run tests in headed mode
-    baseURL: 'http://localhost:3000', // Base URL for the tests
+    baseURL: 'http://localhost:3000', 
     screenshot: 'only-on-failure', // Capture screenshot only on test failure
     video: 'retry-with-video', // Capture video on retry
   },
@@ -23,5 +23,5 @@ module.exports = defineConfig({
       use: { browserName: 'webkit' },
     },
   ],
-  testDir: './playwright/tests', // Update this line to point to the new test directory
+  testDir: './playwright/tests', 
 });
