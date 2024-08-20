@@ -50,5 +50,3 @@ media/
 # Node.js cache
 audio-participation-frontend/node_modules/.cache/
 
-# SQLite database
-audio_participation_backend/db.sqlite3
