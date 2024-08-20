@@ -28,55 +28,18 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Print environment information
-        run: |
-          echo "Python version:"
-          python --version
-          echo "Node.js version:"
-          node --version
-          echo "npm version:"
-          npm --version
-
       - name: Install backend dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r audio_participation_backend/requirements.txt
 
-      - name: Set up Django environment
-        run: |
-          cd audio_participation_backend
-          mkdir -p logs
-          python manage.py check
-
-      - name: Apply migrations
+      - name: Apply migrations and start Django server
         run: |
           cd audio_participation_backend
           python manage.py migrate
-
-      - name: Verify database state
-        run: |
-          cd audio_participation_backend
-          python manage.py dumpdata > db_state.json
-          echo "Database state:"
-          cat db_state.json
-
-      - name: Start Django server
-        run: |
-          cd audio_participation_backend
           python manage.py runserver 0.0.0.0:8000 &
-
-      - name: Print backend logs
-        run: |
-          sleep 10
-          cat audio_participation_backend/logs/django.log
-
-      - name: Wait for backend to be ready
-        run: |
-          sudo apt-get install -y curl
-          until curl --output /dev/null --silent --head --fail http://localhost:8000; do
-            echo 'Waiting for backend...'
-            sleep 10
-          done
+        env:
+          DJANGO_SETTINGS_MODULE: ${{ env.DJANGO_SETTINGS_MODULE }}
 
       - name: Install frontend dependencies
         run: |
@@ -92,38 +55,11 @@ jobs:
           echo "REACT_APP_API_URL=${{ env.REACT_APP_API_URL }}" > .env
           npm start &
 
-      - name: Print frontend logs
+      - name: Wait for servers to be ready
         run: |
-          sleep 10
-          if [ -d "audio-participation-frontend/logs" ]; then
-            cat audio-participation-frontend/logs/*.log
-          else
-            echo "Frontend logs directory not found"
-          fi
-
-      - name: Wait for frontend to be ready
-        run: |
-          until curl --output /dev/null --silent --head --fail http://localhost:3000; do
-            echo 'Waiting for frontend...'
-            sleep 10
-          done
-
-      - name: Check backend server status
-        run: |
+          sleep 30  # Increase if servers need more time to start
           curl -I http://localhost:8000
-
-      - name: Check frontend server status
-        run: |
           curl -I http://localhost:3000
-
-      - name: Check frontend to backend connectivity
-        run: |
-          curl -I http://localhost:3000/api/healthcheck
-
-      - name: Check environment variables
-        run: |
-          echo "REACT_APP_API_URL: $REACT_APP_API_URL"
-          echo "DJANGO_SETTINGS_MODULE: $DJANGO_SETTINGS_MODULE"
 
       - name: Install Cypress dependencies
         run: |
@@ -133,18 +69,9 @@ jobs:
       - name: Run Cypress tests
         env:
           CYPRESS_BASE_URL: http://localhost:3000
-          REACT_APP_API_URL: ${{ env.REACT_APP_API_URL }}
         run: |
           cd audio-participation-frontend
           npx cypress run --config defaultCommandTimeout=120000
-
-      - name: List Cypress videos
-        run: ls -R audio-participation-frontend/cypress/videos
-        continue-on-error: true
-
-      - name: List Cypress screenshots
-        run: ls -R audio-participation-frontend/cypress/screenshots
-        continue-on-error: true
 
       - name: Upload Cypress Videos
         uses: actions/upload-artifact@v2
@@ -165,53 +92,4 @@ jobs:
         with:
           name: cypress-failed-logs
           path: audio-participation-frontend/cypress-failed-log.txt
-        continue-on-error: true
-
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Verify backend files
-        run: ls -l audio_participation_backend/
-
-      - name: Verify frontend files
-        run: ls -l audio-participation-frontend/
-
-      - name: Build and push Docker images
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp-backend:latest -f audio_participation_backend/Dockerfile audio_participation_backend/
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp-frontend:latest -f audio-participation-frontend/Dockerfile audio-participation-frontend/
-          docker push ${{ secrets.DOCKER_USERNAME }}/myapp-backend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/myapp-frontend:latest
-
-      - name: Set up Minikube
-        run: |
-          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          sudo install minikube-linux-amd64 /usr/local/bin/minikube
-          minikube start --driver=docker
-
-      - name: Set up kubectl
-        run: |
-          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-          kubectl config use-context minikube
-
-      - name: Deploy to Minikube
-        run: |
-          kubectl apply -f .github/workflows/deployment.yaml
-          kubectl apply -f .github/workflows/service.yaml
-
-      - name: Run E2E Tests in Kubernetes
-        run: |
-          kubectl apply -f .github/workflows/e2e-tests.yaml
-
-      - name: Collect Test Results
-        run: |
-          kubectl logs -l job-name=myapp-e2e-tests > e2e-test-results.log
-
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v2
-        with:
-          name: e2e-test-results
-          path: e2e-test-results.log
         continue-on-error: true

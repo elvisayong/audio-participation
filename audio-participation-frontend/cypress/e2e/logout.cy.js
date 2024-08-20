@@ -14,8 +14,8 @@ describe('User Authentication - Logout', () => {
     });
 
     it('should log out successfully', () => {
-        headerPage.logout();  // Use the HeaderPage to log out
-        cy.url().should('include', '/login');  // Verify that it redirected to login
+        headerPage.logout(); 
+        cy.url().should('include', '/login');  
         loginPage.verifyLoginPageLoaded();
     });
 });

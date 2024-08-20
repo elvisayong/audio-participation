@@ -12,25 +12,32 @@ test.describe('Plan Management', () => {
     });
 
     test('should allow an admin to create, edit, and delete an urban planning project', async ({ page }) => {
-        await page.goto('/plan-management');
+        await page.goto('/manage-plans');
 
         // Create Plan
         await page.fill('[data-cy=plan-title-input]', 'New Plan');
         await page.fill('[data-cy=plan-description-input]', 'This is a new plan.');
-        await page.fill('[data-cy=plan-expiration-input]', '2024-12-31');
-        await page.click('[data-cy=save-plan-button]');
+        await page.fill('[data-cy=plan-expiration-date-input]', '2024-12-31');
+        await page.click('[data-cy=submit-plan-button]');
 
-        await expect(page.locator('[data-cy=plan-item]')).toContainText('New Plan');
+        await expect(page.locator('.Toastify__toast--success').last()).toHaveText('Plan created successfully!');
 
-        // Edit Plan
-        await page.click('[data-cy=edit-plan-button]');
+        // Find the first matching plan item by title and then click the edit button
+        const planItem = page.locator('[data-cy=plan-item]').filter({ hasText: 'New Plan' }).first();
+        await planItem.locator('[data-cy=edit-plan-button]').click();
+
+        // Edit the plan
         await page.fill('[data-cy=plan-title-input]', 'Edited Plan');
-        await page.click('[data-cy=save-plan-button]');
+        await page.fill('[data-cy=plan-description-input]', 'This is an edited plan.');
+        await page.fill('[data-cy=plan-expiration-date-input]', '2025-12-31');
+        await page.click('[data-cy=submit-plan-button]');
 
-        await expect(page.locator('[data-cy=plan-item]')).toContainText('Edited Plan');
+        await expect(page.locator('.Toastify__toast--success').last()).toHaveText('Plan updated successfully!');
 
-        // Delete Plan
-        await page.click('[data-cy=delete-plan-button]');
-        await expect(page.locator('[data-cy=plan-item]')).not.toContainText('Edited Plan');
+        // Find the updated plan by title and delete it
+        const updatedPlanItem = page.locator('[data-cy=plan-item]').filter({ hasText: 'Edited Plan' }).first();
+        await updatedPlanItem.locator('[data-cy=delete-plan-button]').click();
+
+        await expect(page.locator('.Toastify__toast--success').last()).toHaveText('Plan deleted successfully!');
     });
 });

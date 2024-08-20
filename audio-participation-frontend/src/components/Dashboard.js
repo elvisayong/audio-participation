@@ -50,6 +50,12 @@ const ListItem = styled.li`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 15px;
     cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        background-color: #f1f1f1; /* Highlight color on hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
 `;
 
 const PlanHeader = styled.div`
@@ -216,7 +222,16 @@ function Dashboard() {
                 </SubTitle>
                 <List data-cy="plans-list">
                     {plans.map(plan => (
-                        <ListItem key={plan.id} data-cy="plan-item">
+                        <ListItem
+                            key={plan.id}
+                            data-cy="plan-item"
+                            onClick={() => {
+                                if (user.is_staff) {
+                                    handlePlanClick(plan.id);
+                                }
+                            }}
+                            style={{ cursor: user.is_staff ? 'pointer' : 'default' }}
+                        >
                             <PlanHeader>
                                 <PlanTitle>{plan.title} (<span data-cy="plan-opinion-count">{plan.opinion_count} opinions</span>)</PlanTitle>
                                 {plan.expiration_date && (

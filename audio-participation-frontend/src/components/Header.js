@@ -1,35 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../services/api'; 
+import api from '../services/api';
 
 const HeaderContainer = styled.header`
-    background-color: #343a40;
-    padding: 10px 20px;
+    background-color: rgba(52, 58, 64, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 `;
 
-const Title = styled.h1`
-    margin: 0;
-    font-size: 24px;
+const Logo = styled.img`
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.1);
+    }
 `;
 
 const NavLinks = styled.nav`
     display: flex;
-    gap: 15px;
+    gap: 20px;
 
     a {
         color: white;
         text-decoration: none;
         font-size: 16px;
-        transition: color 0.3s;
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.3s ease;
 
         &:hover {
-            color: #007bff;
+            color: #00d4ff;
+            transform: translateY(-2px);
         }
     }
 
@@ -39,10 +50,12 @@ const NavLinks = styled.nav`
         color: white;
         cursor: pointer;
         font-size: 16px;
-        transition: color 0.3s;
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.3s ease;
 
         &:hover {
-            color: #007bff;
+            color: #00d4ff;
+            transform: translateY(-2px);
         }
     }
 `;
@@ -74,7 +87,9 @@ const Header = () => {
 
     return (
         <HeaderContainer>
-            <Title>Audio Participation</Title>
+            <Link to="/">
+                <Logo src="/logoaudio.png" alt="Audio Participation Logo" data-cy="logo" />
+            </Link>
             <NavLinks>
                 {isAuthenticated ? (
                     <>
@@ -96,4 +111,3 @@ const Header = () => {
 };
 
 export default Header;
-

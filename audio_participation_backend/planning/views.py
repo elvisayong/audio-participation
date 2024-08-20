@@ -33,10 +33,13 @@ class OpinionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        user = self.request.user
         plan_id = self.request.query_params.get('plan', None)
+
         if plan_id is not None:
-            return self.queryset.filter(plan_id=plan_id)  
-        return self.queryset
+            return self.queryset.filter(plan_id=plan_id)
+
+        return self.queryset.filter(citizen=user)
 
     def perform_create(self, serializer):
         plan_id = self.request.data.get('plan')
@@ -52,7 +55,11 @@ class OpinionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def reply(self, request, pk=None):
-        opinion = self.get_object()
+        try:
+            opinion = Opinion.objects.get(pk=pk)
+        except Opinion.DoesNotExist:
+            return Response({"detail": "Opinion not found."}, status=status.HTTP_404_NOT_FOUND)
+
         if request.user.is_staff and request.user == opinion.plan.created_by:
             serializer = ReplySerializer(data=request.data)
             if serializer.is_valid():
@@ -61,6 +68,19 @@ class OpinionViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"detail": "Not authorized to reply to this opinion."}, status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated, IsAdminUser])
+    def delete_reply(self, request, pk=None):
+        try:
+            reply = Reply.objects.get(opinion_id=pk)
+            reply.delete()
+            return Response({"detail": "Reply deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Reply.DoesNotExist:
+            return Response({"detail": "Reply not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class UserCreate(generics.CreateAPIView):

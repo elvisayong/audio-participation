@@ -10,23 +10,30 @@ describe('Dashboard Functionality - Add Opinion', () => {
     before(() => {
         loginPage.visit();
         loginPage.login('francesca', 'password');
-        cy.url().should('include', '/dashboard'); // Ensure we are redirected to the dashboard
-        dashboardPage.visit();
+        cy.url().should('include', '/dashboard');
     });
 
     it('should navigate to the Add Opinion page and submit an opinion', () => {
-        const planId = 1;  
-        dashboardPage.getAddOpinionButton(planId).should('be.visible'); // Ensure the button is visible
-        dashboardPage.navigateToAddOpinion(planId);
-        cy.url().should('include', `/opinions/${planId}`); // Ensure navigation to the correct URL
-        
-        addOpinionPage.startRecording();
-        cy.wait(2000); // Wait for recording to take place
-        addOpinionPage.stopRecording();
-        addOpinionPage.uploadVoiceNote();
-        addOpinionPage.verifyOpinionSubmitted();
+        cy.get('[data-cy^="add-opinion-button"]').first().should('be.visible').click();
+        cy.url().should('include', '/opinions/');
 
-        dashboardPage.visit();
-        dashboardPage.getOpinions().should('have.length.greaterThan', 0); // Check opinions count
+        // Start recording
+        addOpinionPage.startRecording();
+        cy.get('.Toastify__toast--success').should('contain.text', 'Recording started'); 
+
+        cy.wait(3000); 
+
+        // Stop recording
+        addOpinionPage.stopRecording();
+        cy.get('.Toastify__toast--success').should('contain.text', 'Recording stopped'); 
+
+        // Upload the opinion
+        addOpinionPage.uploadVoiceNote();
+        cy.get('.Toastify__toast--success').should('contain.text', 'Voice note uploaded successfully!'); 
+
+        // Redirect back to dashboard
+        cy.url().should('include', '/dashboard'); 
+
+        dashboardPage.getOpinions().should('have.length.greaterThan', 0);
     });
 });
