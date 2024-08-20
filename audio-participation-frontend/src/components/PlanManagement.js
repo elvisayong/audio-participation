@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import api from '../services/api';
 
 const Container = styled.div`
@@ -171,9 +173,11 @@ function PlanManagement() {
             if (editingPlan) {
                 await api.put(`/plans/${editingPlan.id}/`, { title, description, expiration_date: expirationDate });
                 setPlans(plans.map(plan => (plan.id === editingPlan.id ? { ...plan, title, description, expiration_date: expirationDate } : plan)));
+                toast.success('Plan updated successfully!');
             } else {
                 const response = await api.post('/plans/', { title, description, expiration_date: expirationDate });
                 setPlans([...plans, response.data]);
+                toast.success('Plan created successfully!');
             }
             setTitle('');
             setDescription('');
@@ -181,6 +185,7 @@ function PlanManagement() {
             setEditingPlan(null);
         } catch (error) {
             console.error(`Error ${editingPlan ? 'updating' : 'creating'} plan`, error);
+            toast.error(`Failed to ${editingPlan ? 'update' : 'create'} plan.`);
         }
     };
 
@@ -195,13 +200,16 @@ function PlanManagement() {
         try {
             await api.delete(`/plans/${id}/`);
             setPlans(plans.filter(plan => plan.id !== id));
+            toast.success('Plan deleted successfully!');
         } catch (error) {
             console.error('Error deleting plan', error);
+            toast.error('Failed to delete plan.');
         }
     };
 
     return (
         <Container>
+            <ToastContainer />
             <Title data-cy="manage-plans-title">Manage Plans</Title>
             <Form data-cy="plan-form">
                 <Label>Plan Title</Label>

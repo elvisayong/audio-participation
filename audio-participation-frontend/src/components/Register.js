@@ -146,7 +146,7 @@ function Register() {
     return (
         <Container>
             <Box>
-                <Logo src="/path/to/logo.png" alt="Logo" onClick={() => navigate('/')} />
+                <Logo src="/logoaudio.png" alt="Logo" onClick={() => navigate('/')} />
                 <Title>Register</Title>
                 {error && <ErrorMessage data-cy="register-error">{error}</ErrorMessage>}
                 <InputGroup>

@@ -46,3 +46,7 @@ media/
 
 # Docker
 # *.env (comment out this line or ensure it does not exclude Dockerfile)
+
+# Node.js cache
+audio-participation-frontend/node_modules/.cache/
+

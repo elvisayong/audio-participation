@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'; 
+import { useParams, useNavigate } from 'react-router-dom'; 
 import { FaMicrophone, FaStop } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,6 +40,7 @@ const AudioPreview = styled.div`
 
 function AddOpinion() {
     const { planId } = useParams();
+    const navigate = useNavigate(); // Initialize navigate hook
     const [recording, setRecording] = useState(false);
     const [audioUrl, setAudioUrl] = useState('');
     const [audioBlob, setAudioBlob] = useState(null);
@@ -47,22 +48,28 @@ function AddOpinion() {
     const audioRef = useRef(null);
 
     const startRecording = async () => {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorderRef.current = new MediaRecorder(stream);
-        mediaRecorderRef.current.ondataavailable = event => {
-            const audioChunks = [event.data];
-            const blob = new Blob(audioChunks, { type: 'audio/wav' });
-            const url = URL.createObjectURL(blob);
-            setAudioBlob(blob);
-            setAudioUrl(url);
-        };
-        mediaRecorderRef.current.start();
-        setRecording(true);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
+            mediaRecorderRef.current.ondataavailable = event => {
+                const audioChunks = [event.data];
+                const blob = new Blob(audioChunks, { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                setAudioBlob(blob);
+                setAudioUrl(url);
+            };
+            mediaRecorderRef.current.start();
+            setRecording(true);
+            toast.success('Recording started', { autoClose: 2000 });
+        } catch (error) {
+            toast.error('Failed to start recording');
+        }
     };
 
     const stopRecording = () => {
         mediaRecorderRef.current.stop();
         setRecording(false);
+        toast.success('Recording stopped', { autoClose: 2000 });
     };
 
     const handleUpload = async () => {
@@ -82,7 +89,10 @@ function AddOpinion() {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            toast.success('Voice note uploaded successfully!');
+            toast.success('Voice note uploaded successfully!', {
+                onClose: () => navigate('/dashboard'), // Redirect to dashboard after toast is closed
+                autoClose: 2000,
+            });
             setAudioUrl('');
             setAudioBlob(null);
         } catch (error) {
@@ -94,7 +104,6 @@ function AddOpinion() {
         <Container>
             <ToastContainer />
             <Title data-cy="add-opinion-title">Add Your Opinion for Plan {planId}</Title>
-            <Button onClick={handleUpload} data-cy="upload-voice-note-button">Upload Voice Note</Button>
             <div>
                 {!recording ? (
                     <Button type="button" onClick={startRecording} data-cy="start-recording-button">
@@ -110,6 +119,7 @@ function AddOpinion() {
                 <AudioPreview>
                     <h3>Preview:</h3>
                     <audio controls src={audioUrl} ref={audioRef} data-cy="audio-preview" />
+                    <Button onClick={handleUpload} data-cy="upload-voice-note-button">Upload Voice Note</Button>
                 </AudioPreview>
             )}
         </Container>
